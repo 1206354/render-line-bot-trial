@@ -34,10 +34,15 @@ async function handleEvent(event) {
     return Promise.resolve(null);
   }
 
-  return client.replyMessage(event.replyToken, {
+  let py_return = "pythonからの返事";
+  
+  let params = {
     type: 'text',
-    text: 'a' //実際に返信の言葉を入れる箇所
-  });
+    //text: event.message.text //実際に返信の言葉を入れる箇所
+    text:py_return
+  }
+
+  return client.replyMessage(event.replyToken, params);
 }
 
 app.listen(PORT);
