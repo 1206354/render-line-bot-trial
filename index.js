@@ -33,13 +33,15 @@ async function handleEvent(event) {
   if (event.type !== 'message' || event.message.type !== 'text') {
     return Promise.resolve(null);
   }
-
-  let py_return = "pythonからの返事";
-  
-  let params = {
+  var pyshell = new PythonShell('main.py');
+  pyshell.send(event.message.text);
+  pyshell.on('message',function(data){
+    console.log(data);
+  }); 
+  var params = {
     type: 'text',
     //text: event.message.text //実際に返信の言葉を入れる箇所
-    text:py_return
+    text:receive
   }
 
   return client.replyMessage(event.replyToken, params);
