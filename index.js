@@ -36,8 +36,7 @@ async function handleEvent(event) {
   var res_text="";
   var pyshell = new PythonShell('main.py');
   pyshell.send(event.message.text);
-  pyshell.on('event.message.text',function(data){
-    console.log(data);
+  pyshell.on('message',function(data){
     res_text = data;
   }); 
   
