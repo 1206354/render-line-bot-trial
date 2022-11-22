@@ -38,13 +38,13 @@ async function handleEvent(event) {
   pyshell.send(event.message.text);
   pyshell.on('message',function(data){
     console.log(data);
-    data = response.data;
+    res_text = response.data;
   }); 
   
   var params = {
     type: 'text',
     //text: event.message.text //実際に返信の言葉を入れる箇所
-    text: data
+    text: res_text
   }
 
   return client.replyMessage(event.replyToken, params);
