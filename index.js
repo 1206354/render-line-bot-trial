@@ -38,7 +38,7 @@ async function handleEvent(event) {
   pyshell.send(event.message.text);
   pyshell.on('message',function(data){
     console.log(data);
-    res_text = response.data;
+    res_text = data;
   }); 
   
   var params = {
