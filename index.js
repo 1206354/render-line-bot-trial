@@ -37,13 +37,14 @@ async function handleEvent(event) {
   var pyshell = new PythonShell('main.py');
   pyshell.send(event.message.text);
   pyshell.on('message',function(data){
-    res_text = data;
+    console.log(data);
+    data = response.count;
   }); 
   
   var params = {
     type: 'text',
     //text: event.message.text //実際に返信の言葉を入れる箇所
-    text: res_text
+    text: data
   }
 
   return client.replyMessage(event.replyToken, params);
