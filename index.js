@@ -29,12 +29,12 @@ app.post('/webhook', line.middleware(config), (req, res) => {
 
 const client = new line.Client(config);
 
+var pyshell = new PythonShell('main.py');
 async function handleEvent(event) {
   if (event.type !== 'message' || event.message.type !== 'text') {
     return Promise.resolve(null);
   }
   var res_text="";
-  var pyshell = new PythonShell('main.py');
   pyshell.send(event.message.text);
   pyshell.on('message',function(data){
     console.log(data);
