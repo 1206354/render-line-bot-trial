@@ -1,19 +1,6 @@
-'use strict';
 import {PythonShell} from 'python-shell';
 
-let options = {
-  mode: 'text',
-  pythonPath: 'path/to/python',
-  pythonOptions: ['-u'], // get print results in real-time
-  scriptPath: 'path/to/my/scripts',
-  args: ['value1', 'value2', 'value3']
-};
-
-PythonShell.run('my_script.py', options, function (err, results) {
-  if (err) throw err;
-  // results is an array consisting of messages collected during execution
-  console.log('results: %j', results);
-});
+'use strict';
 
 const express = require('express');
 const line = require('@line/bot-sdk');
@@ -44,19 +31,22 @@ app.post('/webhook', line.middleware(config), (req, res) => {
 
 const client = new line.Client(config);
 
-var res_text=""
-var {PythonShell} = require('python-shell');
+let pyshell = new PythonShell('main.py');
 
-//PythonShellのインスタンスpyshellを作成する。jsから呼ぶ出すpythonファイル名は'sample.py'
-var pyshell = new PythonShell('main.py');  
+// sends a message to the Python script via stdin
+pyshell.send(event.message.text);
 
-//jsからpythonコードに'5'を入力データとして提供する 
-pyshell.send(event.message.text); 
+pyshell.on('message', function (message) {
+  // received a message sent from the Python script (a simple "print" statement)
+  console.log(message);
+});
 
-//pythonコード実施後にpythonからjsにデータが引き渡される。
-//pythonに引き渡されるデータは「data」に格納される。
-pyshell.on('message', function (data) {
-  console.log(data);
+// end the input stream and allow the process to exit
+pyshell.end(function (err,code,signal) {
+  if (err) throw err;
+  console.log('The exit code was: ' + code);
+  console.log('The exit signal was: ' + signal);
+  console.log('finished');
 });
 async function handleEvent(event) {
   if (event.type !== 'message' || event.message.type !== 'text') {
@@ -65,7 +55,7 @@ async function handleEvent(event) {
   var params = {
     type: 'text',
     //text: event.message.text //実際に返信の言葉を入れる箇所
-    text: data
+    text: message
   }
   return client.replyMessage(event.replyToken, params);
 }
