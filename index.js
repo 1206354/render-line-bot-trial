@@ -29,24 +29,32 @@ app.post('/webhook', line.middleware(config), (req, res) => {
 
 const client = new line.Client(config);
 
-var pyshell = new PythonShell('main.py');
+var res_text=""
+const PYPATH="main.py"
+var {PythonShell} = require('python-shell');
+var pyshell = new PythonShell(PYPATH, { mode: 'text'});
+var obj={
+  text: event.message.text
+}
+var jsondat = JSON.stringify(obj);
+//(1-3)上記jsondatを書き込むファイルがすでに存在する場合は当該ファイルを一度削除する。
+if (fs.existsSync(JSONFILEPATH)) fs.unlinkSync(JSONFILEPATH)  
+//(1-4)上記jsondatを書き込むファイルがすでに存在する場合は当該ファイルを一度削除する。
+fs.writeFileSync(JSONFILEPATH,jsondat)
+pyshell.send(obj);
+pyshell.on('message',function(data){
+  console.log(data);
+  res_text = data;
+}); 
 async function handleEvent(event) {
   if (event.type !== 'message' || event.message.type !== 'text') {
     return Promise.resolve(null);
   }
-  var res_text="";
-  pyshell.send(event.message.text);
-  pyshell.on('message',function(data){
-    console.log(data);
-    res_text = data;
-  }); 
-  
   var params = {
     type: 'text',
     //text: event.message.text //実際に返信の言葉を入れる箇所
     text: res_text
   }
-
   return client.replyMessage(event.replyToken, params);
 }
 
