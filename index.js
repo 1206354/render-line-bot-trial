@@ -1,7 +1,5 @@
-import {PythonShell} from 'python-shell';
-
 'use strict';
-
+import {PythonShell} from 'python-shell';
 const express = require('express');
 const line = require('@line/bot-sdk');
 const PORT = process.env.PORT || 3000;
