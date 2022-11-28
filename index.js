@@ -30,22 +30,19 @@ app.post('/webhook', line.middleware(config), (req, res) => {
 const client = new line.Client(config);
 
 var res_text=""
-const PYPATH="main.py"
 var {PythonShell} = require('python-shell');
-var pyshell = new PythonShell(PYPATH, { mode: 'text'});
-var obj={
-  text: event.message.text
-}
-var jsondat = JSON.stringify(obj);
-//(1-3)上記jsondatを書き込むファイルがすでに存在する場合は当該ファイルを一度削除する。
-if (fs.existsSync(JSONFILEPATH)) fs.unlinkSync(JSONFILEPATH)  
-//(1-4)上記jsondatを書き込むファイルがすでに存在する場合は当該ファイルを一度削除する。
-fs.writeFileSync(JSONFILEPATH,jsondat)
-pyshell.send(obj);
-pyshell.on('message',function(data){
+
+//PythonShellのインスタンスpyshellを作成する。jsから呼ぶ出すpythonファイル名は'sample.py'
+var pyshell = new PythonShell('main.py');  
+
+//jsからpythonコードに'5'を入力データとして提供する 
+pyshell.send(event.message.text); 
+
+//pythonコード実施後にpythonからjsにデータが引き渡される。
+//pythonに引き渡されるデータは「data」に格納される。
+pyshell.on('message', function (data) {
   console.log(data);
-  res_text = data;
-}); 
+});
 async function handleEvent(event) {
   if (event.type !== 'message' || event.message.type !== 'text') {
     return Promise.resolve(null);
@@ -53,7 +50,7 @@ async function handleEvent(event) {
   var params = {
     type: 'text',
     //text: event.message.text //実際に返信の言葉を入れる箇所
-    text: res_text
+    text: data
   }
   return client.replyMessage(event.replyToken, params);
 }
